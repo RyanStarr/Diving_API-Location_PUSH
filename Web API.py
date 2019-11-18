@@ -18,8 +18,7 @@ def closest(data, input):
 # # -------------------------------------------
 
 tempDataList = [{'lat': 39.7612992, 'lng': -86.1519681},
-                {'lat': 39.762241, 'lng': -86.158436},
-                {'lat': 39.7622292, 'lng': -86.1578917}]
+                {'lat': 39.762241, 'lng': -86.158436}]
 
 
 def main():
@@ -38,28 +37,35 @@ def main():
         # split the element string into a list of words
         itemWords = item.split(",")
 
-        print((item))
+        #   print((item))
         # print(dict(itemWords))
         # extend newlist to include all itemWords
         newlist.append(itemWords)
-    print(newlist)
-    print("Processed" + str(location_part_1))
+
+    # print(newlist)
+    # print("Processed" + str(location_part_1))
     keys = ['lat', 'lng']
+
     counter = 0
     array = []
     while counter < len(newlist):
         dictionary = dict(zip(keys, newlist[counter]))
-        # print(dictionary)
+        print(str(newlist[counter]))
         array.append(dictionary.copy())
         counter += 1
     # Closest to fixed array
-    print("My Array" + str(array))
-    print((array[1]))
-    print("Fixed   " + str(tempDataList))
-    print((tempDataList[1]))
-    print("lats    " + str(item))
+    temp = tempDataList.copy()
+    # print("Temp" + str(temp))
+    print("Original data " + str(json_filenames))
+    print("Original array" + str(location_part_1))
+    # print("My Array single  " + str(array[1].values()))
+    # print("Fixed single   " + str(tempDataList[1].values()))
+
+    print("My Array " + str(array))
+    print("Fixed    " + str(tempDataList))
+    #print("lats    " + str(item))
     # # Working json retrieval
-    # print(closest(array, input))
+    #print(closest(array, input))
     # matching_location = str(closest(array, input))
     # remove_part_1 = matching_location.replace("{'lat': ", '')
     # remove_part_2 = remove_part_1.replace(", 'lng':", ',')
