@@ -5,7 +5,6 @@ from math import cos, asin, sqrt
 app = Flask(__name__)
 app.config["DEBUG"] = True
 
-
 # # ------Calculate closest location------------
 def distance(lat1, lon1, lat2, lon2):
     p = 0.017453292519943295
@@ -16,8 +15,6 @@ def distance(lat1, lon1, lat2, lon2):
 def closest(data, input):
     # return min(data, key=lambda p: distance(input['lat'], input['lng'], p['lat'], p['lng']))
     return min(data, key=lambda p: distance(input['lat'], input['lng'], p['lat'], p['lng']))
-
-
 # # -------------------------------------------
 
 tempDataList = [{'lat': 39.7612992, 'lng': -86.1519681},
@@ -34,43 +31,51 @@ def main():
     json_filenames = [pos_json for pos_json in os.listdir(json_path) if pos_json.endswith('.json')]
 
     # Add in formatting to list of locations
-    # location_part_1 = ["{'lat': " + os.path.splitext(x)[0] + "}" for x in json_filenames]
     location_part_1 = [os.path.splitext(x)[0] for x in json_filenames]
-    # location_part_1 = [os.path.splitext(x)[0] for x in json_filenames]
-    location_part_2 = (a.split(",") for a in location_part_1)
+    newlist = list()
+    # Iterate over mylist items
+    for item in location_part_1:
+        # split the element string into a list of words
+        itemWords = item.split(",")
 
-    # location_part_3 = [i.replace(',', ", 'lng': ") for i in location_part_2]
-    # for key, value in location_part_1.it
-    print("GETTNG DATA")
-    # print("Temp one item" + str(tempDataList[1]))
-    print("Temp    " + str(type((tempDataList[0]))))
-    print("Final   " + str(list(location_part_2)))
-    print("GOT DATA")
-
-
-#  dictOfWords = {i: location_part_1[i] for i in range(0, len(location_part_2))}
-# print(dictOfWords)
-# # print("Location" + str(locations))
-# print("Get data")
-
-# # Working json retrieval
-# print(closest(tempDataList, input))
-# matching_location = str(closest(tempDataList, input))
-# remove_part_1 = matching_location.replace("{'lat': ", '')
-# remove_part_2 = remove_part_1.replace(", 'lng':", ',')
-# file_output = remove_part_2.replace("}", '.json')
-# print(file_output)
-# with open('json/' + str(file_output)) as file:
-#     # need to send file name after getting closest
-#     api_data = json.load(file)
-# site_location = "lat :" + str(api_data["lat"] + ", lng : " + str(api_data["lng"]))
-# print(api_data)
-
-# @app.route('/', methods=['GET'])
-# def api_all():
-#     return jsonify(api_data)
-#
-# app.run()
+        print((item))
+        # print(dict(itemWords))
+        # extend newlist to include all itemWords
+        newlist.append(itemWords)
+    print(newlist)
+    print("Processed" + str(location_part_1))
+    keys = ['lat', 'lng']
+    counter = 0
+    array = []
+    while counter < len(newlist):
+        dictionary = dict(zip(keys, newlist[counter]))
+        # print(dictionary)
+        array.append(dictionary.copy())
+        counter += 1
+    # Closest to fixed array
+    print("My Array" + str(array))
+    print((array[1]))
+    print("Fixed   " + str(tempDataList))
+    print((tempDataList[1]))
+    print("lats    " + str(item))
+    # # Working json retrieval
+    # print(closest(array, input))
+    # matching_location = str(closest(array, input))
+    # remove_part_1 = matching_location.replace("{'lat': ", '')
+    # remove_part_2 = remove_part_1.replace(", 'lng':", ',')
+    # file_output = remove_part_2.replace("}", '.json')
+    # print(file_output)
+    # with open('json/' + str(file_output)) as file:
+    #     # need to send file name after getting closest
+    #     api_data = json.load(file)
+    # site_location = "lat :" + str(api_data["lat"] + ", lng : " + str(api_data["lng"]))
+    # print(api_data)
+    #
+    # @app.route('/', methods=['GET'])
+    # def api_all():
+    #     return jsonify(api_data)
+    #
+    # app.run()
 
 
 if __name__ == "__main__":
