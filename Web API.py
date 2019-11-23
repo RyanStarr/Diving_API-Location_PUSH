@@ -1,88 +1,47 @@
-from flask import Flask, jsonify
-import json, os
-from math import cos, asin, sqrt
+import json
 
+from flask import Flask
+from flask_restful import Api, Resource
+
+# Setup REST API
 app = Flask(__name__)
-app.config["DEBUG"] = True
-
-# # ------Calculate closest location------------
-def distance(lat1, lon1, lat2, lon2):
-    p = 0.017453292519943295
-    a = 0.5 - cos((lat2 - lat1) * p) / 2 + cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2
-    return 12742 * asin(sqrt(a))
+api = Api(app)
 
 
-def closest(data, input):
-    # return min(data, key=lambda p: distance(input['lat'], input['lng'], p['lat'], p['lng']))
-    return min(data, key=lambda p: distance(input['lat'], input['lng'], p['lat'], p['lng']))
-# # -------------------------------------------
-
-tempDataList = [{'lat': 39.7612992, 'lng': -86.1519681},
-                {'lat': 39.762241, 'lng': -86.158436}]
-
-
-def main():
-    input = {'lat': -28.9913, 'lng': 167.9249}
-
-
-    # Retrieve files and strip them of ".json" ending.
-    json_path = 'json/'
-    json_filenames = [pos_json for pos_json in os.listdir(json_path) if pos_json.endswith('.json')]
-
-    # Add in formatting to list of locations
-    location_part_1 = [os.path.splitext(x)[0] for x in json_filenames]
-    newlist = list()
-    # Iterate over mylist items
-    for item in location_part_1:
-        # split the element string into a list of words
-        itemWords = item.split(",")
-
-        #   print((item))
-        # print(dict(itemWords))
-        # extend newlist to include all itemWords
-        newlist.append(itemWords)
-
-    # print(newlist)
-    # print("Processed" + str(location_part_1))
-    keys = ['lat', 'lng']
-
-    counter = 0
-    array = []
-    while counter < len(newlist):
-        dictionary = dict(zip(keys, newlist[counter]))
-        print(str(newlist[counter]))
-        array.append(dictionary.copy())
-        counter += 1
-    # Closest to fixed array
-    temp = tempDataList.copy()
-    # print("Temp" + str(temp))
-    print("Original data " + str(json_filenames))
-    print("Original array" + str(location_part_1))
-    # print("My Array single  " + str(array[1].values()))
-    # print("Fixed single   " + str(tempDataList[1].values()))
-
-    print("My Array " + str(array))
-    print("Fixed    " + str(tempDataList))
-    #print("lats    " + str(item))
-    # # Working json retrieval
-    #print(closest(array, input))
-    # matching_location = str(closest(array, input))
-    # remove_part_1 = matching_location.replace("{'lat': ", '')
-    # remove_part_2 = remove_part_1.replace(", 'lng':", ',')
-    # file_output = remove_part_2.replace("}", '.json')
-    # print(file_output)
-    # with open('json/' + str(file_output)) as file:
-    #     # need to send file name after getting closest
-    #     api_data = json.load(file)
-    # site_location = "lat :" + str(api_data["lat"] + ", lng : " + str(api_data["lng"]))
-    # print(api_data)
-    #
-    # @app.route('/', methods=['GET'])
-    # def api_all():
-    #     return jsonify(api_data)
-    #
-    # app.run()
+def file_name(latlng):
+    # Split latitude and longitude
+    lat = str(latlng).split(',')[0]
+    lng = str(latlng).split(',')[1]
+    # Round to 2 decimal places
+    simple_lat = round(float(lat), 2)
+    simple_lng = round(float(lng), 2)
+    # Combine simplified back together
+    simple_latlng = str(simple_lat) + ',' + str(simple_lng)
+    return simple_latlng
 
 
-if __name__ == "__main__":
-    main()
+def get_json(name):
+    # Open matching location file
+    try:
+        with open(name + '.json') as file:
+            # Read file contents
+            api_data = json.load(file)
+    except:
+        api_data = "Location not found", 404
+    return api_data
+
+
+class Data(Resource):
+    def get(self, latlng_input):
+        # Get latitude and longitude from GET request.
+        try:
+            json_data = get_json(file_name(latlng_input))
+        except:
+            json_data = "Failed to extract location"
+        # Output retrieved data.
+        return json_data
+
+# Example GET request http://127.0.0.1:5000/location/-29.0238,167.9082
+api.add_resource(Data, "/location/<string:latlng_input>")
+
+#app.run(debug=True)
